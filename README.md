@@ -12,7 +12,7 @@ An enterprise-grade security analytics platform providing real-time monitoring, 
 
 ## Live Demo
 
-### [👉 View Live Dashboard](https://enterprise-auth-analytics.vercel.app)
+### [👉 View Live Dashboard](https://security-dashboard-amber.vercel.app)
 
 *(Note: The dashboard is fully responsive and optimized for modern browsers)*
 
