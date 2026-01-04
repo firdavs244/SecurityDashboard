@@ -10,7 +10,7 @@ An enterprise-grade security analytics platform providing real-time monitoring, 
 
 ---
 
-## 🚀 Live Demo
+## Live Demo
 
 ### [👉 View Live Dashboard](https://enterprise-auth-analytics.vercel.app)
 
@@ -18,7 +18,7 @@ An enterprise-grade security analytics platform providing real-time monitoring, 
 
 ---
 
-## 📸 Dashboard Preview
+## Dashboard Preview
 
 ![Security Dashboard Interface](./public/preview.png)
 *(Screenshot of the main dashboard view)*
