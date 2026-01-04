@@ -1,140 +1,48 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Icon from '../../../components/AppIcon';
 
 const GeographicLoginMap = ({ loginData, onRegionClick }) => {
-  const canvasRef = useRef(null);
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [hoveredPoint, setHoveredPoint] = useState(null);
-  const animationFrameRef = useRef(null);
-  const particlesRef = useRef([]);
 
-  useEffect(() => {
-    const canvas = canvasRef?.current;
-    if (!canvas) return;
-
-    const ctx = canvas?.getContext('2d');
-    const resizeCanvas = () => {
-      const rect = canvas?.getBoundingClientRect();
-      canvas.width = rect?.width * window.devicePixelRatio;
-      canvas.height = rect?.height * window.devicePixelRatio;
-      ctx?.scale(window.devicePixelRatio, window.devicePixelRatio);
-    };
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Initialize particles for real-time authentication events
-    const initParticles = () => {
-      particlesRef.current = loginData?.map((point) => ({
-        x: (point?.longitude + 180) * (canvas?.width / window.devicePixelRatio / 360),
-        y: (90 - point?.latitude) * (canvas?.height / window.devicePixelRatio / 180),
-        radius: Math.random() * 3 + 2,
-        opacity: Math.random() * 0.5 + 0.5,
-        pulseSpeed: Math.random() * 0.02 + 0.01,
-        color: point?.threatLevel === 'high' ? '#e53e3e' : point?.threatLevel === 'medium' ? '#d69e2e' : '#2c7a7b',
-      }));
-    };
-
-    initParticles();
-
-    // Animation loop
-    const animate = () => {
-      const rect = canvas?.getBoundingClientRect();
-      ctx?.clearRect(0, 0, rect?.width, rect?.height);
-
-      // Draw world map outline (simplified)
-      ctx.strokeStyle = 'rgba(44, 122, 123, 0.2)';
-      ctx.lineWidth = 1;
-      ctx?.strokeRect(0, 0, rect?.width, rect?.height);
-
-      // Draw grid lines
-      ctx.strokeStyle = 'rgba(44, 122, 123, 0.1)';
-      for (let i = 0; i <= 360; i += 30) {
-        const x = (i / 360) * rect?.width;
-        ctx?.beginPath();
-        ctx?.moveTo(x, 0);
-        ctx?.lineTo(x, rect?.height);
-        ctx?.stroke();
-      }
-      for (let i = 0; i <= 180; i += 30) {
-        const y = (i / 180) * rect?.height;
-        ctx?.beginPath();
-        ctx?.moveTo(0, y);
-        ctx?.lineTo(rect?.width, y);
-        ctx?.stroke();
-      }
-
-      // Draw and animate particles
-      particlesRef?.current?.forEach((particle) => {
-        particle.opacity += particle?.pulseSpeed;
-        if (particle?.opacity > 1 || particle?.opacity < 0.3) {
-          particle.pulseSpeed *= -1;
-        }
-
-        ctx?.beginPath();
-        ctx?.arc(particle?.x, particle?.y, particle?.radius, 0, Math.PI * 2);
-        ctx.fillStyle = particle?.color?.replace(')', `, ${particle?.opacity})`)?.replace('rgb', 'rgba');
-        ctx?.fill();
-
-        // Draw pulse ring
-        ctx?.beginPath();
-        ctx?.arc(particle?.x, particle?.y, particle?.radius + 5, 0, Math.PI * 2);
-        ctx.strokeStyle = particle?.color?.replace(')', `, ${particle?.opacity * 0.3})`)?.replace('rgb', 'rgba');
-        ctx.lineWidth = 2;
-        ctx?.stroke();
-      });
-
-      animationFrameRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      if (animationFrameRef?.current) {
-        cancelAnimationFrame(animationFrameRef?.current);
-      }
-    };
-  }, [loginData]);
-
-  const handleCanvasClick = (e) => {
-    const canvas = canvasRef?.current;
-    const rect = canvas?.getBoundingClientRect();
-    const x = e?.clientX - rect?.left;
-    const y = e?.clientY - rect?.top;
-
-    // Find clicked region
-    particlesRef?.current?.forEach((particle, index) => {
-      const distance = Math.sqrt(Math.pow(x - particle?.x, 2) + Math.pow(y - particle?.y, 2));
-      if (distance < particle?.radius + 10) {
-        const region = loginData?.[index];
-        setSelectedRegion(region);
-        if (onRegionClick) {
-          onRegionClick(region);
-        }
-      }
-    });
+  // Convert lat/lng to SVG coordinates (Mercator projection)
+  const projectPoint = (lat, lng) => {
+    const x = ((lng + 180) / 360) * 1000;
+    const latRad = (lat * Math.PI) / 180;
+    const mercN = Math.log(Math.tan(Math.PI / 4 + latRad / 2));
+    const y = (500 - (mercN / Math.PI) * 500) * 0.7 + 100;
+    return { x, y };
   };
 
-  const handleCanvasMouseMove = (e) => {
-    const canvas = canvasRef?.current;
-    const rect = canvas?.getBoundingClientRect();
-    const x = e?.clientX - rect?.left;
-    const y = e?.clientY - rect?.top;
-
-    let found = false;
-    particlesRef?.current?.forEach((particle, index) => {
-      const distance = Math.sqrt(Math.pow(x - particle?.x, 2) + Math.pow(y - particle?.y, 2));
-      if (distance < particle?.radius + 10) {
-        setHoveredPoint(loginData?.[index]);
-        found = true;
-      }
-    });
-
-    if (!found) {
-      setHoveredPoint(null);
+  const getThreatColor = (threatLevel) => {
+    switch (threatLevel) {
+      case 'high':
+        return '#ef4444';
+      case 'medium':
+        return '#f59e0b';
+      default:
+        return '#14b8a6';
     }
   };
+
+  const handlePointClick = (region) => {
+    setSelectedRegion(region);
+    if (onRegionClick) {
+      onRegionClick(region);
+    }
+  };
+
+  // Simplified world map paths (continents)
+  const worldMapPaths = `
+    M 150 120 L 300 110 L 320 140 L 300 160 L 250 150 L 200 160 L 150 140 Z
+    M 320 150 L 450 145 L 480 130 L 520 140 L 550 160 L 530 180 L 480 185 L 450 175 L 400 170 L 350 180 L 320 170 Z
+    M 520 180 L 580 175 L 620 160 L 650 170 L 680 190 L 670 210 L 640 220 L 600 215 L 570 200 L 540 195 Z
+    M 100 220 L 180 210 L 230 220 L 250 250 L 230 280 L 180 290 L 130 280 L 100 260 Z
+    M 250 260 L 300 255 L 320 270 L 310 290 L 280 300 L 260 285 Z
+    M 680 200 L 750 190 L 800 200 L 820 220 L 810 240 L 780 250 L 740 245 L 700 230 Z
+    M 150 310 L 200 300 L 230 320 L 220 350 L 190 360 L 160 340 Z
+    M 700 280 L 750 275 L 780 290 L 770 310 L 740 320 L 710 305 Z
+  `;
 
   return (
     <div className="bg-card rounded-xl border border-border shadow-teal-sm overflow-hidden h-full flex flex-col">
@@ -159,71 +67,173 @@ const GeographicLoginMap = ({ loginData, onRegionClick }) => {
           </div>
         </div>
       </div>
-      <div className="flex-1 relative">
-        <canvas
-          ref={canvasRef}
-          onClick={handleCanvasClick}
-          onMouseMove={handleCanvasMouseMove}
-          className="w-full h-full cursor-pointer"
+      <div className="flex-1 relative bg-gradient-to-b from-slate-900 to-slate-800 p-4">
+        <svg
+          viewBox="0 0 1000 500"
+          className="w-full h-full"
           style={{ minHeight: '400px' }}
-        />
+        >
+          {/* World map continents */}
+          <path
+            d={worldMapPaths}
+            fill="rgba(148, 163, 184, 0.1)"
+            stroke="rgba(148, 163, 184, 0.3)"
+            strokeWidth="0.5"
+          />
 
+          {/* Grid lines */}
+          {[...Array(11)].map((_, i) => (
+            <line
+              key={`v-${i}`}
+              x1={i * 100}
+              y1="0"
+              x2={i * 100}
+              y2="500"
+              stroke="rgba(148, 163, 184, 0.1)"
+              strokeWidth="0.5"
+            />
+          ))}
+          {[...Array(6)].map((_, i) => (
+            <line
+              key={`h-${i}`}
+              x1="0"
+              y1={i * 100}
+              x2="1000"
+              y2={i * 100}
+              stroke="rgba(148, 163, 184, 0.1)"
+              strokeWidth="0.5"
+            />
+          ))}
+
+          {/* Login points */}
+          {loginData?.map((point, index) => {
+            const { x, y } = projectPoint(point.latitude, point.longitude);
+            const color = getThreatColor(point.threatLevel);
+            const radius = Math.min(Math.max(point.loginCount / 200, 3), 15);
+
+            return (
+              <g key={index}>
+                {/* Pulse ring animation */}
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={radius + 10}
+                  fill="none"
+                  stroke={color}
+                  strokeOpacity="0.3"
+                  strokeWidth="2"
+                >
+                  <animate
+                    attributeName="r"
+                    from={radius}
+                    to={radius + 15}
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="stroke-opacity"
+                    from="0.6"
+                    to="0"
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+                
+                {/* Main point */}
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={radius}
+                  fill={color}
+                  fillOpacity="0.8"
+                  stroke={color}
+                  strokeWidth="2"
+                  className="cursor-pointer transition-all hover:fill-opacity-100"
+                  onClick={() => handlePointClick(point)}
+                  onMouseEnter={() => setHoveredPoint(point)}
+                  onMouseLeave={() => setHoveredPoint(null)}
+                >
+                  <animate
+                    attributeName="fill-opacity"
+                    values="0.6;1;0.6"
+                    dur="1.5s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+              </g>
+            );
+          })}
+        </svg>
+
+        {/* Hover tooltip */}
         {hoveredPoint && (
           <div
-            className="absolute bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-teal-md pointer-events-none"
+            className="absolute bg-slate-800/95 backdrop-blur-sm border border-slate-700 rounded-lg p-3 shadow-lg pointer-events-none z-20"
             style={{
               left: '50%',
               top: '20px',
               transform: 'translateX(-50%)',
-              zIndex: 10,
             }}
           >
             <div className="text-sm space-y-1">
               <div className="flex items-center gap-2">
-                <Icon name="MapPin" size={14} color="var(--color-primary)" />
-                <span className="font-medium text-foreground">{hoveredPoint?.city}, {hoveredPoint?.country}</span>
+                <Icon name="MapPin" size={14} className="text-teal-400" />
+                <span className="font-medium text-white">{hoveredPoint?.city}, {hoveredPoint?.country}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Icon name="Activity" size={14} color="var(--color-muted-foreground)" />
-                <span className="text-muted-foreground">{hoveredPoint?.loginCount} logins</span>
+                <Icon name="Activity" size={14} className="text-slate-400" />
+                <span className="text-slate-300">{hoveredPoint?.loginCount?.toLocaleString()} logins</span>
               </div>
               <div className="flex items-center gap-2">
-                <Icon name="Shield" size={14} color="var(--color-muted-foreground)" />
-                <span className="text-muted-foreground">Threat: {hoveredPoint?.threatLevel}</span>
+                <Icon name="TrendingUp" size={14} className="text-slate-400" />
+                <span className="text-slate-300">Success: {hoveredPoint?.successRate}%</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Icon name="Shield" size={14} className="text-slate-400" />
+                <span className="text-slate-300 capitalize">Threat: {hoveredPoint?.threatLevel}</span>
               </div>
             </div>
           </div>
         )}
 
+        {/* Selected region details */}
         {selectedRegion && (
-          <div className="absolute bottom-4 left-4 right-4 bg-card/95 backdrop-blur-sm border border-border rounded-lg p-4 shadow-teal-md">
+          <div className="absolute bottom-4 left-4 right-4 bg-slate-800/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-lg z-20">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
-                <h4 className="text-base md:text-lg font-heading font-semibold text-foreground mb-2">
+                <h4 className="text-base md:text-lg font-heading font-semibold text-white mb-3">
                   {selectedRegion?.city}, {selectedRegion?.country}
                 </h4>
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Total Logins:</span>
-                    <span className="ml-2 font-medium text-foreground">{selectedRegion?.loginCount}</span>
+                    <span className="text-slate-400">Total Logins:</span>
+                    <span className="ml-2 font-medium text-white">{selectedRegion?.loginCount?.toLocaleString()}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Success Rate:</span>
-                    <span className="ml-2 font-medium text-success">{selectedRegion?.successRate}%</span>
+                    <span className="text-slate-400">Success Rate:</span>
+                    <span className="ml-2 font-medium text-teal-400">{selectedRegion?.successRate}%</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Threat Level:</span>
-                    <span className="ml-2 font-medium text-warning capitalize">{selectedRegion?.threatLevel}</span>
+                    <span className="text-slate-400">Threat Level:</span>
+                    <span 
+                      className={`ml-2 font-medium capitalize ${
+                        selectedRegion?.threatLevel === 'high' ? 'text-red-400' : 
+                        selectedRegion?.threatLevel === 'medium' ? 'text-amber-400' : 
+                        'text-teal-400'
+                      }`}
+                    >
+                      {selectedRegion?.threatLevel}
+                    </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Active Sessions:</span>
-                    <span className="ml-2 font-medium text-foreground">{selectedRegion?.activeSessions}</span>
+                    <span className="text-slate-400">Active Sessions:</span>
+                    <span className="ml-2 font-medium text-white">{selectedRegion?.activeSessions?.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedRegion(null)}
-                className="p-2 rounded-lg hover:bg-muted transition-smooth"
+                className="p-2 rounded-lg hover:bg-slate-700/50 transition-all text-slate-400 hover:text-white"
               >
                 <Icon name="X" size={18} />
               </button>
