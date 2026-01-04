@@ -1,6 +1,30 @@
+```markdown
 # Security Dashboard
 
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Redux](https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white)
+[![Vercel Deployment](https://img.shields.io/badge/Deploy-Vercel-black?style=for-the-badge&logo=vercel)](https://enterprise-auth-analytics.vercel.app)
+
 An enterprise-grade security analytics platform providing real-time monitoring, threat detection, and comprehensive system insights across multiple domains.
+
+---
+
+## 🚀 Live Demo
+
+### [👉 View Live Dashboard](https://enterprise-auth-analytics.vercel.app)
+
+*(Note: The dashboard is fully responsive and optimized for modern browsers)*
+
+---
+
+## 📸 Dashboard Preview
+
+![Security Dashboard Interface](./public/preview.png)
+*(Screenshot of the main dashboard view)*
+
+---
 
 ## Overview
 
@@ -14,24 +38,20 @@ This application delivers a unified security operations center with four special
 ## Tech Stack
 
 **Core Framework**
-
 - React 18.2 with modern hooks and concurrent features
 - Vite 5.4 for optimized build pipeline and HMR
 
 **State Management & Routing**
-
 - Redux Toolkit 2.6 for predictable state management
 - React Router DOM 6.0 for client-side routing
 
 **UI & Visualization**
-
 - Tailwind CSS 3.4 with custom utility extensions
 - Recharts 2.15 & D3.js 7.9 for data visualization
 - Three.js 0.182 for 3D system architecture rendering
 - Framer Motion 10.16 for animations
 
 **Development Tools**
-
 - Axios for HTTP client
 - React Hook Form for form validation
 - date-fns for date manipulation
@@ -46,7 +66,7 @@ This application delivers a unified security operations center with four special
 
 ```bash
 # Clone repository
-git clone https://github.com/firdavs244/SecurityDashboard.git
+git clone [https://github.com/firdavs244/SecurityDashboard.git](https://github.com/firdavs244/SecurityDashboard.git)
 cd SecurityDashboard
 
 # Install dependencies
@@ -54,6 +74,7 @@ npm install
 
 # Start development server
 npm start
+
 ```
 
 The application runs on `http://localhost:5173`
@@ -64,6 +85,7 @@ The application runs on `http://localhost:5173`
 npm start       # Start development server
 npm run build   # Production build with source maps
 npm run serve   # Preview production build locally
+
 ```
 
 ## Project Architecture
@@ -83,40 +105,41 @@ src/
 ├── App.jsx                  # Root component
 ├── Routes.jsx               # Route definitions
 └── index.jsx                # Application entry point
+
 ```
 
 ## Key Features
 
 ### Security Command Center
 
-- Geographic login visualization with threat heatmaps
-- Real-time authentication event monitoring
-- Automated threat detection and alerting
-- Failed login attempt tracking
+* Geographic login visualization with threat heatmaps
+* Real-time authentication event monitoring
+* Automated threat detection and alerting
+* Failed login attempt tracking
 
 ### Executive Overview
 
-- Executive summary tables with trend analysis
-- Automated security insights generation
-- User growth metrics and KPI tracking
-- Security posture assessment
+* Executive summary tables with trend analysis
+* Automated security insights generation
+* User growth metrics and KPI tracking
+* Security posture assessment
 
 ### System Performance Hub
 
-- 3D system architecture visualization
-- Real-time resource gauges (CPU, Memory, Disk)
-- Performance timeline with granular metrics
-- Server cluster health monitoring
-- Alert management panel
+* 3D system architecture visualization
+* Real-time resource gauges (CPU, Memory, Disk)
+* Performance timeline with granular metrics
+* Server cluster health monitoring
+* Alert management panel
 
 ### User Analytics Dashboard
 
-- Geographic user distribution mapping
-- Acquisition channel performance
-- Conversion funnel visualization
-- Demographic breakdown analysis
-- Device and browser analytics
-- Registration trend analysis
+* Geographic user distribution mapping
+* Acquisition channel performance
+* Conversion funnel visualization
+* Demographic breakdown analysis
+* Device and browser analytics
+* Registration trend analysis
 
 ## Configuration
 
@@ -125,21 +148,22 @@ Environment variables can be configured in `.env`:
 ```env
 VITE_API_BASE_URL=your_api_endpoint
 VITE_MAP_API_KEY=your_map_api_key
+
 ```
 
 ## Performance Optimization
 
-- Code splitting per route
-- Lazy loading for dashboard components
-- Optimized bundle size with Vite tree-shaking
-- Memoized expensive computations
-- Virtual scrolling for large data sets
+* Code splitting per route
+* Lazy loading for dashboard components
+* Optimized bundle size with Vite tree-shaking
+* Memoized expensive computations
+* Virtual scrolling for large data sets
 
 ## Browser Support
 
-- Chrome/Edge >= 90
-- Firefox >= 88
-- Safari >= 14
+* Chrome/Edge >= 90
+* Firefox >= 88
+* Safari >= 14
 
 ## Contributing
 
@@ -156,3 +180,5 @@ MIT License - see LICENSE file for details
 ## Contact
 
 Repository: [github.com/firdavs244/SecurityDashboard](https://github.com/firdavs244/SecurityDashboard)
+
+```
