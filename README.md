@@ -65,7 +65,7 @@ This application delivers a unified security operations center with four special
 
 ```bash
 # Clone repository
-git clone [https://github.com/firdavs244/SecurityDashboard.git](https://github.com/firdavs244/SecurityDashboard.git)
+git clone https://github.com/firdavs244/SecurityDashboard.git
 cd SecurityDashboard
 
 # Install dependencies
