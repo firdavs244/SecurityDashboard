@@ -1,4 +1,3 @@
-```markdown
 # Security Dashboard
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -180,5 +179,3 @@ MIT License - see LICENSE file for details
 ## Contact
 
 Repository: [github.com/firdavs244/SecurityDashboard](https://github.com/firdavs244/SecurityDashboard)
-
-```
